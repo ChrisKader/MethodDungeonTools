@@ -751,33 +751,33 @@ function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
             crrCnt = crrCnt + enemy["count"]
             crrPct = round((crrCnt/dgnCnts.normal)*100, 2)
 
-            for i=20.00,39.99,0.01 do
+            for i=0.00,20.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
                     updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
-            for i=40.00,59.99,0.01 do
+            for i=20.01,40.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                    updateReapingPhaseTable(2,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
-            for i=60.00,79.99,0.01 do
+            for i=40.01,60.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                    updateReapingPhaseTable(3,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
-            for i=80.00,99.99,0.01 do
+            for i=60.00,80.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                    updateReapingPhaseTable(4,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
-            for i=99.99,100.00,0.01 do
+            for i=80.00,100.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                    updateReapingPhaseTable(5,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
 
