@@ -230,10 +230,6 @@ end
 local patrolPoints =  {}
 local patrolLines = {}
 
-function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
-    
-end
-
 function MDTDungeonEnemyMixin:DisplayPatrol(shown)
 
     --Hide all points/line
@@ -652,6 +648,144 @@ function MethodDungeonTools:DungeonEnemies_UpdateReaping()
         if db.currentDifficulty < 10 then
             blip.texture_Reaping:Hide()
         end
+    end
+end
+
+function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
+
+    function round(num, numDecimalPlaces)
+        local mult = 10^(numDecimalPlaces or 0)
+        return math.floor(num * mult + 0.5) / mult
+    end
+    local reapingPhases = {
+        [1] = {
+            ["phase"] = "20%",
+            ["souls"] = {
+                ["148716"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148893"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148894"] = {
+                    ["unitDetails"] = {},
+                },
+            },
+        },
+        [2] = {
+            ["phase"] = "40%",
+            ["souls"] = {
+                ["148716"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148893"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148894"] = {
+                    ["unitDetails"] = {},
+                },
+            },
+        },
+        [3] = {
+            ["phase"] = "60%",
+            ["souls"] = {
+                ["148716"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148893"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148894"] = {
+                    ["unitDetails"] = {},
+                },
+            },
+        },
+        [4] = {
+            ["phase"] = "80%",
+            ["souls"] = {
+                ["148716"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148893"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148894"] = {
+                    ["unitDetails"] = {},
+                },
+            },
+        },
+        [5] = {
+            ["phase"] = "100%",
+            ["souls"] = {
+                ["148716"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148893"] = {
+                    ["unitDetails"] = {},
+                },
+                ["148894"] = {
+                    ["unitDetails"] = {},
+                },
+            },
+        },
+    }
+
+    if not db then db = MethodDungeonTools:GetDB() end
+    local enemies = MethodDungeonTools.dungeonEnemies[db.currentDungeonIdx]
+    preset = MethodDungeonTools:GetCurrentPreset()
+    if not enemies then return end
+
+    --{normal=198,teeming=237,teemingEnabled=true}
+    local dgnCnts = MethodDungeonTools.dungeonTotalCount[db.currentDungeonIdx]
+    local crrCnt = 0
+    crrPct = 0
+
+    for enemyIdx,pullDta in pairs(preset.value.pulls) do
+
+        if not pullDta then return end
+
+        local enemy = enemies[enemyIdx]
+        local reapingNpcId = MethodDungeonTools.reapingIndex[enemy.reaping]
+        for clnIdx,cln in pairs(pullDta) do
+            local crrCln = enemy["clones"][clnIdx]
+            crrCnt = crrCnt + enemy["count"]
+            crrPct = round((crrCnt/dgnCnts.normal)*100, 2)
+
+            for i=20.00,39.99,0.01 do
+                if round(i,2) == round(crrPct,2) then
+                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                end
+            end
+    
+            for i=40.00,59.99,0.01 do
+                if round(i,2) == round(crrPct,2) then
+                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                end
+            end
+    
+            for i=60.00,79.99,0.01 do
+                if round(i,2) == round(crrPct,2) then
+                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                end
+            end
+    
+            for i=80.00,99.99,0.01 do
+                if round(i,2) == round(crrPct,2) then
+                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                end
+            end
+    
+            for i=99.99,100.00,0.01 do
+                if round(i,2) == round(crrPct,2) then
+                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                end
+            end
+
+        end
+    end
+
+    local function updateReapingPhaseTable(phase,reapNpc,enemyIdx,clnIdx)
+        return table.insert(reapingPhases[phase]["souls"][tostring(reapNpc)]["unitDetails"],{["idx"] = enemyIdx, ["cln"] = clnIdx})
     end
 end
 
