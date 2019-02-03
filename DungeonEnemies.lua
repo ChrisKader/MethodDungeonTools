@@ -14,6 +14,81 @@ function MethodDungeonTools:GetDungeonEnemyBlips()
     return blips
 end
 
+ 
+
+local reapingPhasesDefault = {
+    [1] = {
+        ["phase"] = "20%",
+        ["souls"] = {
+            ["148716"] = {
+                ["unitDetails"] = {},
+            },
+            ["148893"] = {
+                ["unitDetails"] = {},
+            },
+            ["148894"] = {
+                ["unitDetails"] = {},
+            },
+        },
+    },
+    [2] = {
+        ["phase"] = "40%",
+        ["souls"] = {
+            ["148716"] = {
+                ["unitDetails"] = {},
+            },
+            ["148893"] = {
+                ["unitDetails"] = {},
+            },
+            ["148894"] = {
+                ["unitDetails"] = {},
+            },
+        },
+    },
+    [3] = {
+        ["phase"] = "60%",
+        ["souls"] = {
+            ["148716"] = {
+                ["unitDetails"] = {},
+            },
+            ["148893"] = {
+                ["unitDetails"] = {},
+            },
+            ["148894"] = {
+                ["unitDetails"] = {},
+            },
+        },
+    },
+    [4] = {
+        ["phase"] = "80%",
+        ["souls"] = {
+            ["148716"] = {
+                ["unitDetails"] = {},
+            },
+            ["148893"] = {
+                ["unitDetails"] = {},
+            },
+            ["148894"] = {
+                ["unitDetails"] = {},
+            },
+        },
+    },
+    [5] = {
+        ["phase"] = "100%",
+        ["souls"] = {
+            ["148716"] = {
+                ["unitDetails"] = {},
+            },
+            ["148893"] = {
+                ["unitDetails"] = {},
+            },
+            ["148894"] = {
+                ["unitDetails"] = {},
+            },
+        },
+    },
+}
+
 MethodDungeonTools.reapingStatic = {
     ["148716"] = {
         ["name"] = "Risen Soul",
@@ -37,6 +112,8 @@ MethodDungeonTools.reapingStatic = {
         ["outline"] = { 2.04, 0, 2.04, 1 }
     },
 }
+
+local reapingPhases = reapingPhasesDefault
 
 --From http://wow.gamepedia.com/UI_coordinates
 local function framesOverlap(frameA, frameB,offset)
@@ -649,6 +726,11 @@ function MethodDungeonTools:DungeonEnemies_UpdateReaping()
             blip.texture_Reaping:Hide()
         end
     end
+
+    reapingPhases = reapingPhasesDefault
+    MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
+
+    _G["MDTTestTable"] = reapingPhases
 end
 
 function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
@@ -657,78 +739,7 @@ function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
         local mult = 10^(numDecimalPlaces or 0)
         return math.floor(num * mult + 0.5) / mult
     end
-    local reapingPhases = {
-        [1] = {
-            ["phase"] = "20%",
-            ["souls"] = {
-                ["148716"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148893"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148894"] = {
-                    ["unitDetails"] = {},
-                },
-            },
-        },
-        [2] = {
-            ["phase"] = "40%",
-            ["souls"] = {
-                ["148716"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148893"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148894"] = {
-                    ["unitDetails"] = {},
-                },
-            },
-        },
-        [3] = {
-            ["phase"] = "60%",
-            ["souls"] = {
-                ["148716"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148893"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148894"] = {
-                    ["unitDetails"] = {},
-                },
-            },
-        },
-        [4] = {
-            ["phase"] = "80%",
-            ["souls"] = {
-                ["148716"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148893"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148894"] = {
-                    ["unitDetails"] = {},
-                },
-            },
-        },
-        [5] = {
-            ["phase"] = "100%",
-            ["souls"] = {
-                ["148716"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148893"] = {
-                    ["unitDetails"] = {},
-                },
-                ["148894"] = {
-                    ["unitDetails"] = {},
-                },
-            },
-        },
-    }
+    
 
     if not db then db = MethodDungeonTools:GetDB() end
     local enemies = MethodDungeonTools.dungeonEnemies[db.currentDungeonIdx]
@@ -745,7 +756,14 @@ function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
         if not pullDta then return end
 
         local enemy = enemies[enemyIdx]
-        local reapingNpcId = MethodDungeonTools.reapingIndex[enemy.reaping]
+
+        local reapingNpcId
+
+        for key,value in pairs(MethodDungeonTools.reapingStatic) do
+            if MethodDungeonTools.reapingIndex[key]["spawns"][tostring(enemy.id)] then reapingNpcId = key end
+        end
+        --local reapingNpcId = MethodDungeonTools.reapingIndex[enemy.reaping]
+        print(reapingNpcId)
         for clnIdx,cln in pairs(pullDta) do
             local crrCln = enemy["clones"][clnIdx]
             crrCnt = crrCnt + enemy["count"]
@@ -753,42 +771,51 @@ function MethodDungeonTools:DungeonEnemies_UpdateReapingPulls()
 
             for i=0.00,20.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
+                    MethodDungeonTools:updateReapingPhaseTable(1,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
             for i=20.01,40.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(2,reapingNpcId,enemyIdx,clnIdx)
+                    MethodDungeonTools:updateReapingPhaseTable(2,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
             for i=40.01,60.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(3,reapingNpcId,enemyIdx,clnIdx)
+                    MethodDungeonTools:updateReapingPhaseTable(3,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
             for i=60.00,80.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(4,reapingNpcId,enemyIdx,clnIdx)
+                    MethodDungeonTools:updateReapingPhaseTable(4,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
     
             for i=80.00,100.00,0.01 do
                 if round(i,2) == round(crrPct,2) then
-                    updateReapingPhaseTable(5,reapingNpcId,enemyIdx,clnIdx)
+                    MethodDungeonTools:updateReapingPhaseTable(5,reapingNpcId,enemyIdx,clnIdx)
                 end
             end
 
         end
     end
 
-    local function updateReapingPhaseTable(phase,reapNpc,enemyIdx,clnIdx)
-        return table.insert(reapingPhases[phase]["souls"][tostring(reapNpc)]["unitDetails"],{["idx"] = enemyIdx, ["cln"] = clnIdx})
-    end
 end
 
+function MethodDungeonTools:updateReapingPhaseTable(phase,reapNpc,enemyIdx,clnIdx)
+
+    if not reapNpc then return end
+    local len = #reapingPhases[phase]["souls"][tostring(reapNpc)]["unitDetails"]
+
+    reapingPhases[phase]["souls"][tostring(reapNpc)]["unitDetails"][len + 1] = {
+        ["idx"] = enemyIdx, 
+        ["cln"] = clnIdx
+    }
+
+    --return table.insert(reapingPhases[phase]["souls"][tostring(reapNpc)]["unitDetails"],{["idx"] = enemyIdx, ["cln"] = clnIdx})
+end
 ---DungeonEnemies_UpdateInfested
 ---Updates which blips should display infested state based on preset.week
 function MethodDungeonTools:DungeonEnemies_UpdateInfested(week)
